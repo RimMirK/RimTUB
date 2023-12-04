@@ -1,0 +1,12 @@
+aiohttp==3.9.1
+aiosignal==1.3.1
+attrs==23.1.0
+frozenlist==1.4.0
+idna==3.6
+multidict==6.0.4
+pyaes==1.6.1
+pygame==2.5.2
+Pyrogram==2.0.106
+PySocks==1.7.1
+TgCrypto==1.2.5
+yarl==1.9.3
