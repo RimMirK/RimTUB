@@ -44,9 +44,11 @@ class Command:
         return dumps(self.as_dict(), indent=4)
 
 class Feature:
+    name: str
     description: str
     
-    def __init__(self, description) -> None:
+    def __init__(self, name, /, description) -> None:
+        self.name = name
         self.description = description
     
     def as_dict(self) -> dict:

@@ -6,14 +6,21 @@ from pyrogram.enums.parse_mode import ParseMode
 from config import API_ID, API_HASH, PHONE
 from utils import get_script_directory
 
+
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 from pygame.mixer import Sound, init
+
 init()
+
 s = Sound('started.mp3')
 
-version = '1.0.0'
+
+
+
+
+version = 'pre 1.0.1'
 
 def start():
     cl = Client(

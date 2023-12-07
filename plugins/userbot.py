@@ -30,7 +30,8 @@ async def _me(_, msg: M):
         f"ОС: {b( sys.platform )}\n"
         f"\n"
         f"Модули (плагины): {b(helplist.get_modules_count())}\n"
-        f"Всего команд: {b(sum(list(map(lambda i: i.get_commands_count(), helplist.get_modules()))))}"
+        f"Всего команд: {b(sum([*map(lambda i: i.get_commands_count(), helplist.get_modules())]))}\n"
+        f"Всего возможностей: {b(sum([*map(lambda i: i.get_features_count(), helplist.get_modules())]))}"
     )
     await msg.edit(me_text)
 
@@ -59,9 +60,12 @@ async def _help(_, msg: M):
                 (" ".join(list(map(str, c.args)))) + '\n\n'
             )
 
-        help_text += b(f"\nВозможности ({mod.get_features_count()}):") + "\n"
+        help_text += b(f"\nВозможности ({mod.get_features_count()})")
+        help_text += ":\n" if mod.get_features_count() > 0 else "\n"
         for f in mod.get_features():
-            help_text += "  " + "\n  ".join(f.description.split('\n'))
+            help_text += "  " + b(f.name) + ":\n"
+            help_text += "    " + "\n    ".join(f.description.split('\n'))
+            help_text += "\n\n"
 
         return await msg.edit(help_text)
 
@@ -71,14 +75,22 @@ async def _help(_, msg: M):
         f"Модули (плагины): {b(helplist.get_modules_count())}\n"
     )
     commands_count = 0
+    features_count = 0
     for module in helplist.get_modules():
         _commands_count = module.get_commands_count()
+        _features_count = module.get_features_count()
         commands_count += _commands_count
-        help_text += f"    {code(module.name)} ({_commands_count} {plural(_commands_count, ('команда', 'команды', 'команд'))})\n"
+        features_count += _features_count
+        help_text += (
+            f"    {code(module.name)} "
+            f"({b(_commands_count)} {plural(_commands_count, ('команда', 'команды', 'команд'))} и "
+            f"{ b(_features_count)} {plural(_features_count, ('возможность', 'возмоожности', 'возможностей'))})\n"
+        )
 
 
     help_text += (
-        f"(всего {commands_count} {plural(commands_count, ('команда', 'команды', 'команд'))})\n"
+        f"(всего {b(commands_count)} {plural(commands_count, ('команда', 'команды', 'команд'))} и \n"
+        f"{b(features_count)} {plural(features_count, ('возможность', 'возмоожности', 'возможностей'))})\n"
         f'\nДля получения списка команд модуля\nиспользуйте {code(PREFIX+"help")} [\xa0название\xa0модуля\xa0]'
     )
 

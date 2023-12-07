@@ -6,7 +6,7 @@ helplist.add_module(
     Module(
         "ChatTools",
         description="Инструменты для работы с чатами",
-        version="1.0.0",
+        version="1.0.1",
         author="@RimMirK"
     ).add_command(
         Command(['id', 'chatid', 'cid'], [], "Показать ID чата")
@@ -14,6 +14,7 @@ helplist.add_module(
         Command(['chat', 'c'], [], "Получить всю информацию о чате")
     ).add_feature(
         Feature(
+            "Нет удаленным сообщений", 
             f"Сохраняет удаленные сообщения.\n"
             f"Для работы требуется указать {b('config.user_config.DELETED_MESSAGES_CHAT_ID')}."
         )
