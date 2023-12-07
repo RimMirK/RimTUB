@@ -13,7 +13,7 @@ helplist.add_module(
     Module(
         'RepeatTools',
         author='@RimMirK',
-        version='1.0.0',
+        version='1.0.1',
         description="Повторяет заданный текст определенное кол-во раз с определенной заддержкой."
     ).add_command(
         Command(['repeat', 'rep'],
@@ -25,6 +25,8 @@ helplist.add_module(
             'Прекращает повторять сообщение'
     ))
 )
+
+rep = []
 
 @cmd(["repeat", 'rep'])
 async def repeat(app, msg: types.Message):
