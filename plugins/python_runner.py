@@ -8,8 +8,9 @@ from contextlib import redirect_stderr, redirect_stdout
 import asyncio, time, aiohttp, sys
 from traceback import print_exc
 from io import StringIO
+import threading
 
-cmd = Cmd(get_group(__name__))
+cmd = Cmd(get_group())
 
 helplist.add_module(
     Module(
@@ -21,11 +22,14 @@ helplist.add_module(
         Command(['py'], [Arg('Код')], "Запустить код")
     ).add_command(
         Command(['rpy'], [Arg('Ответ на сообщение')], "Запускает код из отвеченного сообщения")
+    ).add_command(
+        Command(['eval'], [Arg('Выражение')], "Запускает eval()")
     )
 )
 
 
 async def aexec(code, *args, timeout=None):
+    print(repr(timeout))
     exec(
         f"async def __todo(client, message, *args):\n"
         + " app = client; "
@@ -36,7 +40,7 @@ async def aexec(code, *args, timeout=None):
         + " ru = getattr(r, 'from_user', None)\n"
         + "".join(f"\n {_l}" for _l in code.split("\n"))
     )
-
+    
     f = StringIO()
     with redirect_stdout(f):
         await asyncio.wait_for(locals()["__todo"](*args), timeout=timeout)
@@ -74,9 +78,10 @@ async def python_exec(app, msg):
 
     await msg.edit_text(b("<emoji id=5821116867309210830>⏳</emoji> Выполняю...", False))
 
+
     try:
         start_time = time.perf_counter()
-        result = await aexec(code, app, msg, timeout=5)
+        result = await aexec(code, app, msg, timeout=10)
         stop_time = time.perf_counter()
 
         result = result.strip()
@@ -102,7 +107,7 @@ async def python_exec(app, msg):
         return await msg.edit_text(
             b("<emoji id=5418368536898713475>🐍</emoji> Python " + sys.version.split()[0], False) + "\n\n" +
             pre(code, 'python') + "\n\n" +
-            b("<emoji id=5465665476971471368>❌</emoji> Время на исполнение кода исчерапно! TimeoutError"),
+            b("<emoji id=5465665476971471368>❌</emoji> Время на исполнение кода исчерапно! TimeoutError", False),
 
             disable_web_page_preview=True,
         )
@@ -121,3 +126,17 @@ async def python_exec(app, msg):
         )
 
 
+@cmd(['eval'])
+async def _eval(app, msg):
+    m = message = msg
+    r = msg.reply_to_message
+    u = msg.from_user
+    p = print
+    ru = getattr(r, 'from_user', None)
+
+    code = msg.text.split(maxsplit=1)[-1]
+    try:
+        result = eval(code, globals(), locals())
+    except Exception as ex:
+        result = str(ex)
+    await msg.edit(code_html(code)  + ' = ' + code_html(result))

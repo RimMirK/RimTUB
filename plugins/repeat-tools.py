@@ -7,7 +7,7 @@ from utils import (
 import asyncio
 from pyrogram import errors, types
 
-cmd = Cmd(get_group(__name__))
+cmd = Cmd(get_group())
 
 helplist.add_module(
     Module(
@@ -26,15 +26,15 @@ helplist.add_module(
     ))
 )
 
-rep = []
 
 @cmd(["repeat", 'rep'])
 async def repeat(app, msg: types.Message):
 
     try:
-        global rep
+        rep = app.st.get('rep', [])
         n = max(rep) + 1 if rep else 1
         rep.append(n)
+        app.st.rep = rep
         
         _, count, delay, *text = msg.command
         text = ' '.join(text)
@@ -44,7 +44,7 @@ async def repeat(app, msg: types.Message):
             f"Для исправления:{pre(msg.text, 'python')}"
         )
         for _ in range(int(count)):
-            if n not in rep: 
+            if n not in app.st.get('rep', []): 
                 await app.send_message(msg.chat.id, f"⛔ Перестал повторять сообщение {b(n)}")
                 break
             try: await app.send_message(msg.chat.id, text)
@@ -61,14 +61,13 @@ async def repeat(app, msg: types.Message):
         )
 
 @cmd(["norepeat", 'stoprepeat', 'norep', 'stoprep'])
-async def norepeat(_, msg):
+async def norepeat(app, msg):
     try:
         _, n = msg.text.split()
-        global rep
         if n == '*':
-            rep = []
+            app.st.rep = []
         else:
-            rep.remove(int(n))
+            app.st.get('rep', []).remove(int(n))
         await msg.edit("оправил запрос на остановку. Остановится при отправке следующего сообщения (само сообщение уже не отправиться)")
     except:
         await msg.edit('<emoji id="5300877490313509761">📛</emoji> error')

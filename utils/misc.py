@@ -1,5 +1,8 @@
 from typing import Any
-from .helplist import HelpList
+from .helplist import HelpList, singleton
+from .database import Database
+from .modify_pyrogram_client import ModifyPyrogramClient as Client
+from config import DATABASE_FILE
 from time import perf_counter
 
 helplist = HelpList()
@@ -7,7 +10,7 @@ helplist = HelpList()
 bot_uptime = perf_counter()
 
 
-from pyrogram import Client, filters
+from pyrogram import filters
 from config import PREFIX
 
 class Cmd:
@@ -20,3 +23,11 @@ class Cmd:
             filters.command(commands, PREFIX) & filters.me,
             group=self.group
         )
+
+
+import itertools
+a = itertools.count()
+
+def get_group() -> int:
+    return next(a)
+

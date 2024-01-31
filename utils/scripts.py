@@ -7,7 +7,7 @@ def get_script_directory():
         return os.path.dirname(path)
 
 
-from typing import Any
+from typing import Any, List
 
 def get_args(text: str, default='') -> str|Any:
     try: return text.split(maxsplit=1)[1]
@@ -38,9 +38,16 @@ def sec_to_str(seconds: str) -> str:
     return o
 
 
-def plural(num, words):
-    num = int(list(str(num))[-1])
-    match num:
+def plural(num, words: List['str']):
+    strnum = str(num)
+    last_2_nums = int(''.join(strnum[-2:-1])) if len(strnum) >= 2 else None
+    last_num = int(strnum[-1])
+
+    if last_2_nums:
+        if 11 <= last_2_nums <= 20:
+            return words[2]
+    
+    match last_num:
         case 1:
             return words[0]
         case 2|3|4:
@@ -53,5 +60,10 @@ import os, sys
 def restart():
     os.execl(sys.executable, sys.executable, *sys.argv)
 
-def get_group(_name) -> int:
-    return abs(hash(_name) // 15_000_000_000_000_000)
+
+
+def get_numbers_from_string(string) -> List[float]:
+    import re
+    nums = re.findall(r'\d*\.\d+|\d+', string)
+    nums = [float(i) for i in nums]
+    return nums

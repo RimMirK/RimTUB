@@ -14,7 +14,7 @@ from config import PREFIX
 
 import sys, time
 
-cmd = Cmd(get_group(__name__))
+cmd = Cmd(get_group())
 
 @cmd(['me', 'start', 'menu'])
 async def _me(_, msg: M):

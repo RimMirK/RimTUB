@@ -1,6 +1,7 @@
-from pyrogram import Client, filters, types, enums
+from pyrogram import Client, types, enums
 from config import DELETED_MESSAGES_CHAT_ID, DELETED_MESSAGES_FILTERS
-from utils import code, a, b, Cmd, get_group, helplist, Module, Argument as Arg, Command, Feature
+from utils import code, a, b, Cmd, get_group, helplist, Module, Command, Feature, PREFIX
+import asyncio
 
 helplist.add_module(
     Module(
@@ -18,10 +19,14 @@ helplist.add_module(
             f"Сохраняет удаленные сообщения.\n"
             f"Для работы требуется указать {b('config.user_config.DELETED_MESSAGES_CHAT_ID')}."
         )
+    ).add_command(
+        Command(['online'], [], "Сделать себя всегда онлайн")
+    ).add_command(
+        Command(['offline'], [], "Отменить всегда онлайн")
     )
 )
 
-G = get_group(__name__)
+G = get_group()
 cmd = Cmd(G)
 
 @cmd(['id', 'chatid', 'cid'])
@@ -197,3 +202,22 @@ else:
     print("config.DELETED_MESSAGES_CHAT_ID не задано. Удаленные сообщения регестрироваться не будут!")
 
 
+        
+@cmd(['online'])
+async def _online(app, msg):
+    await msg.edit(
+        "<emoji id=5427009714745517609>✅</emoji> "
+        "Теперь ты всегда в сети!\n"
+        "Для отмены пиши " + code(PREFIX + 'offline')
+    )
+    await app.db.set("chat_tools", 'online', True)
+    while await app.db.get("chat_tools", 'online', False):
+        omsg = await app.send_message('me', '.')
+        await omsg.delete()
+
+        await asyncio.sleep(10)
+   
+@cmd(['offline'])
+async def _offline(app, msg):
+    await app.db.set('chat_tools', 'online', False)
+    await msg.edit("<emoji id=5427009714745517609>✅</emoji> Теперь ты не в сети!")

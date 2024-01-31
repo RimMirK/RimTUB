@@ -5,24 +5,24 @@ from utils import (
 )
 
 
-cmd = Cmd(get_group(__name__))
+cmd = Cmd(get_group())
 
 helplist.add_module(
     Module(
         "calc",
-        version='1.1.0',
+        version='1.1.2',
         author='@RimMirK',
         description="Калькулятор",
     ).add_command(
         Command(
-            ['calc', 'eval'],
+            ['calc'],
             [Arg("Выражение (пример)")],
             "Посчитать"
         )
     )
 )
 
-@cmd(['calc', 'eval'])
+@cmd(['calc'])
 async def calc(_, msg: types.Message):
     _, equations = msg.text.split(maxsplit=1)
     
@@ -35,6 +35,7 @@ async def calc(_, msg: types.Message):
         .replace('∙', '*')
         .replace(':', '/')
         .replace('÷', '/')
+        .replace('√', 'math.sqrt')
     )
     try:
         import math, utils

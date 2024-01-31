@@ -35,13 +35,7 @@ class Command:
         self.commands = commands if type(commands) == list else [commands]
         self.args = args
         self.description = description
-    
 
-    def as_dict(self) -> dict:
-        return asdict(self)
-
-    def __str__(self) -> str:
-        return dumps(self.as_dict(), indent=4)
 
 class Feature:
     name: str
@@ -50,12 +44,7 @@ class Feature:
     def __init__(self, name, /, description) -> None:
         self.name = name
         self.description = description
-    
-    def as_dict(self) -> dict:
-        return asdict(self)
 
-    def __str__(self) -> str:
-        return dumps(self.as_dict(), indent=4)
 
 class Module:
     commands: List[Command]
@@ -102,13 +91,7 @@ class Module:
 
     def get_features(self) -> List[Feature]:
         return self.features
-    
 
-    def as_dict(self) -> dict:
-        return asdict(self)
-
-    def __str__(self) -> str:
-        return dumps(self.as_dict(), indent=4)
 
 @singleton
 class HelpList:
@@ -138,11 +121,5 @@ class HelpList:
     
     def get_modules(self) -> List[Module]:
         return self.modules.values()
-    
-    def as_dict(self) -> dict:
-        return asdict(self)
-
-    def __str__(self) -> str:
-        return dumps(self.as_dict(), indent=4)
 
 
