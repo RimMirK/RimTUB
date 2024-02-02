@@ -7,12 +7,13 @@ from utils import (
     b, a, code,
     HEADER,
     Module, Command, Argument as Arg,
+    ModifyPyrogramClient as Client,
 )
 
 from main import version
 from config import PREFIX
 
-import sys, time
+import os, sys, time, time, json
 
 cmd = Cmd(get_group())
 
@@ -102,7 +103,20 @@ async def _help(_, msg: M):
 @cmd(['restart', 'reload'])
 async def _resatrt(app, msg):
     await msg.edit("Перезагружаюсь...")
-    restart()
+    restart(app.app_hash, msg.chat.id, msg.id)
+
+@Client.on_ready()
+async def _on_start(app):
+    if len(sys.argv) >= 2:
+        print(sys.argv)
+        _, type_, *values = sys.argv
+        if type_ == 'restart':
+            app_hash, time_, chat_id, msg_id = values
+            if app.app_hash != app_hash:
+                return
+            now = time.perf_counter()
+            delta = now - float(time_)
+            await app.edit_message_text(int(chat_id), int(msg_id), f'Перезапущено за <b>{delta:.2f}s.</b>')
 
 
 
@@ -110,7 +124,7 @@ mod = Module(
     "Main",
     description="Главный модуль RimTUB. Помощь и управление тут",
     author="RimMirK",
-    version='1.0.0'
+    version='1.1.0'
 )
 
 mod.add_command(Command(['me', 'start', 'menu'], [Arg()], "Открыть стартовое меню"))

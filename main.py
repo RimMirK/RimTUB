@@ -5,21 +5,25 @@ if __name__ == '__main__':
 from pyrogram import idle
 from pyrogram.enums.parse_mode import ParseMode
 
-from config import API_ID, API_HASH, PHONES
+from config import API_ID, API_HASH, PHONES, PLAY_SOUND
 from utils import get_script_directory, ModifyPyrogramClient
 
+from sys import argv
 
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+play_sound = (True if len(argv) <= 1 else False) if PLAY_SOUND else False
 
-from pygame.mixer import Sound, init
+if play_sound:
+    from os import environ
+    environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
-init()
+    from pygame.mixer import Sound, init
 
-s = Sound('started.mp3')
+    init()
+
+    s = Sound('started.mp3')
 
  
-version = '1.0.0'
+version = '1.2.0'
 
 
 def start():
@@ -41,9 +45,12 @@ def start():
 
         cl.start()
 
+    if play_sound:
+        s.play()
 
-    s.play()
-    print("RimTUB Запущен и готов к работе!")
+
+    print("\n- RimTUB Запущен и готов к работе! -\n")
+
     idle()
 
 if __name__ == '__main__':

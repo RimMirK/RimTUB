@@ -2,7 +2,7 @@ from utils import (
     Cmd, helplist,
     Module, Command, Argument as Arg,
     pre, code, b,
-    get_group
+    get_group, sec_to_str,
 )
 import asyncio
 from pyrogram import errors, types
@@ -29,19 +29,17 @@ helplist.add_module(
 
 @cmd(["repeat", 'rep'])
 async def repeat(app, msg: types.Message):
-
     try:
         rep = app.st.get('rep', [])
         n = max(rep) + 1 if rep else 1
         rep.append(n)
-        app.st.rep = rep
+        app.st.set('rep', rep)
         
         _, count, delay, *text = msg.command
         text = ' '.join(text)
         await msg.edit(
             f"Начинаю повторять сообщение {code(n)}"
-            f"{pre(text)} {b(count)} раз с заддержкой в {b(delay)} сек.\n\n"
-            f"Для исправления:{pre(msg.text, 'python')}"
+            f"{pre(text)} {b(count)} раз с заддержкой в {b(sec_to_str(delay, False))}\n\n"
         )
         for _ in range(int(count)):
             if n not in app.st.get('rep', []): 

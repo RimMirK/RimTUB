@@ -1,13 +1,13 @@
 from pyrogram import Client, types, enums
 from config import DELETED_MESSAGES_CHAT_ID, DELETED_MESSAGES_FILTERS
-from utils import code, a, b, Cmd, get_group, helplist, Module, Command, Feature, PREFIX
+from utils import code, a, b, Cmd, get_group, helplist, Module, Command, Feature, PREFIX, check_ping
 import asyncio
 
 helplist.add_module(
     Module(
         "ChatTools",
         description="Инструменты для работы с чатами",
-        version="1.0.1",
+        version="1.2.0",
         author="@RimMirK"
     ).add_command(
         Command(['id', 'chatid', 'cid'], [], "Показать ID чата")
@@ -23,6 +23,8 @@ helplist.add_module(
         Command(['online'], [], "Сделать себя всегда онлайн")
     ).add_command(
         Command(['offline'], [], "Отменить всегда онлайн")
+    ).add_command(
+        Command(['ping'], [], "Узнать пинг")
     )
 )
 
@@ -36,6 +38,11 @@ async def _id(_, msg):
 @cmd(['chat', 'c'])
 async def _chat(_, msg):
     await msg.edit("Объект чата: " + code(msg.chat))
+
+@cmd(['ping'])
+async def _ping(app, msg):
+    ping = await check_ping(app)
+    await msg.edit(b(f"Pong!\n\nping: {ping:.1f}ms"))
 
 
 messages: dict[int, dict[int, types.Message]] = {}

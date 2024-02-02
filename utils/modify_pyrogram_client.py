@@ -11,6 +11,8 @@ from pathlib import Path
 from hashlib import sha256
 
 
+_on_ready_funcs: list = []
+
 class ModifyPyrogramClient(Client):
     cl: Client
     db: Database
@@ -18,12 +20,13 @@ class ModifyPyrogramClient(Client):
     num: int
 
     def __init__(self, *args, num: int, **kwargs):
-        self.num = num
         super().__init__(*args, **kwargs)
 
         self.st = DictStorage()
+        self.num = num
+        self.app_hash = sha256(bytes(str(self.phone_number).encode())).hexdigest()
 
-        database = Database(sha256(bytes(str(self.phone_number).encode())).hexdigest())
+        database = Database(self.app_hash)
 
         self.loop.run_until_complete(
             database.bootstrap(DATABASE_FILE)
@@ -31,24 +34,20 @@ class ModifyPyrogramClient(Client):
     
         self.db = database
     
-    def on_ready(self: Client = None, group: int = 0) -> Callable:
+
+    def start(self, *args, **kwargs):
+        r = super().start(*args, **kwargs)
+        
+        for func in _on_ready_funcs:
+            self.loop.create_task(func(self))
+
+        return r
+
+    def on_ready(self=None, *_, **__) -> Callable:
         def decorator(func: Callable):
-            def wrapper(app: Client, *_):
-                if app.st.get(f'get_raw{group}', True):
-                    app.st.set(f'get_raw{group}', False)
-                    print('return')
-                    return asyncio.run(func(app))
-
-            if isinstance(self, Client):
-                self.add_handler(pyrogram.handlers.RawUpdateHandler(wrapper), group)
-            else:
-                if not hasattr(func, "handlers"):
-                    func.handlers = []
-
-                func.handlers.append((pyrogram.handlers.RawUpdateHandler(wrapper), group))
-
-            return func
+            _on_ready_funcs.append(func)
         return decorator
+
 
     def print(self=None, text='', *, end='\n'):
         # frame = getframeinfo(currentframe().f_back)
