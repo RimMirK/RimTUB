@@ -17,11 +17,11 @@ helplist.add_module(
         "PythonRunner",
         description='Запускает код на Python',
         author="RimMirK",
-        version='1.0.0'
+        version='1.2.0'
     ).add_command(
         Command(['py'], [Arg('Код')], "Запустить код")
     ).add_command(
-        Command(['rpy'], [Arg('Ответ на сообщение')], "Запускает код из отвеченного сообщения")
+        Command(['rpy'], [Arg('Ответ на сообщение/цитата')], "Запускает код из отвеченного сообщения")
     ).add_command(
         Command(['eval'], [Arg('Выражение')], "Запускает eval()")
     )
@@ -29,7 +29,6 @@ helplist.add_module(
 
 
 async def aexec(code, *args, timeout=None):
-    print(repr(timeout))
     exec(
         f"async def __todo(client, message, *args):\n"
         + " app = client; "
@@ -37,10 +36,13 @@ async def aexec(code, *args, timeout=None):
         + " r = msg.reply_to_message; "
         + " u = msg.from_user; "
         + " p = print; "
+        + " q = msg.quote_text; "
+        + " import asyncio, utils; "
+        # + " from pyrogram import "
         + " ru = getattr(r, 'from_user', None)\n"
         + "".join(f"\n {_l}" for _l in code.split("\n"))
     )
-    
+     
     f = StringIO()
     with redirect_stdout(f):
         await asyncio.wait_for(locals()["__todo"](*args), timeout=timeout)
@@ -61,7 +63,8 @@ async def paste_neko(code: str):
             ) as paste:
                 paste.raise_for_status()
                 result = await paste.json()
-    except Exception:
+    except Exception as e:
+        print(e)
         return "Pasting failed"
     else:
         return f"nekobin.com/{result['result']['key']}.py"
@@ -72,7 +75,9 @@ async def python_exec(app, msg):
         return await msg.edit_text(b("Введи код!"))
 
     if msg.command[0] == "rpy":
-        code = msg.reply_to_message.text or msg.reply_to_message.caption
+        if not msg.reply_to_message:
+            return await msg.edit_text(b("Ответь на сообщение!"))
+        code = msg.quote_text or msg.reply_to_message.text or msg.reply_to_message.caption
     else:
         code = (msg.text or msg.caption).split(maxsplit=1)[1]
 
@@ -81,10 +86,12 @@ async def python_exec(app, msg):
 
     try:
         start_time = time.perf_counter()
-        result = await aexec(code, app, msg, timeout=10)
+        result = await aexec(code, app, msg, timeout=300)
         stop_time = time.perf_counter()
 
         result = result.strip()
+
+        result = result.replace(app.me.phone_number, "*****")
 
         if len(result) > 3072:
             result = await paste_neko(result)
@@ -132,11 +139,16 @@ async def _eval(app, msg):
     r = msg.reply_to_message
     u = msg.from_user
     p = print
+    q = msg.quote_text
     ru = getattr(r, 'from_user', None)
+    import asyncio
 
     code = msg.text.split(maxsplit=1)[-1]
     try:
         result = eval(code, globals(), locals())
     except Exception as ex:
         result = str(ex)
+
+    result = str(result).replace(app.me.phone_number, "*****")
+
     await msg.edit(code_html(code)  + ' = ' + code_html(result))

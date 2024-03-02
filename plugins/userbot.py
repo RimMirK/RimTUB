@@ -11,7 +11,7 @@ from utils import (
 )
 
 from main import version
-from config import PREFIX
+from config import PREFIX, SHOW_HEADER_IN_HELP
 
 import os, sys, time, time, json
 
@@ -28,7 +28,7 @@ async def _me(_, msg: M):
         f"\n"
         f"<emoji id=5418368536898713475>🐍</emoji> Python: {b( sys.version.split()[0] )}\n"
         f"<emoji id=5246743576485832125>🔥</emoji> Pyrogram: {b( __version__ )}\n"
-        f"ОС: {b( sys.platform )}\n"
+        f"<emoji id=5215186239853964761>💿</emoji> ОС: {b( sys.platform )}\n"
         f"\n"
         f"Модули (плагины): {b(helplist.get_modules_count())}\n"
         f"Всего команд: {b(sum([*map(lambda i: i.get_commands_count(), helplist.get_modules())]))}\n"
@@ -46,11 +46,11 @@ async def _help(_, msg: M):
             return await msg.edit(f"Модуль {mod_name} не найден!\nПосмотреть список модулей: "+code(PREFIX+'help'))
         
         help_text = (
-            HEADER + '\n\n' +
+            (HEADER + '\n\n' if SHOW_HEADER_IN_HELP else '') +
             f"Модуль {b(mod.name)}\n\n" +
             (f"Версия: {b(mod.version)}\n" if mod.version else '') +
-            (f"Автор: {b(mod.author)}\n" if mod.author else '') +
-            (f"Описание: {b(mod.description)}\n" if mod.description else '') +
+            (f"Автор: {b(mod.author, False)}\n" if mod.author else '') +
+            (f"Описание: {b(mod.description, False)}\n" if mod.description else '') +
             ("\n\n" if any((mod.version, mod.author, mod.description)) else '') +
             b(f"Команды ({mod.get_commands_count()}):") + "\n"
         )
@@ -71,7 +71,7 @@ async def _help(_, msg: M):
         return await msg.edit(help_text)
 
     help_text = (
-        HEADER + "\n"
+        (HEADER + "\n" if SHOW_HEADER_IN_HELP else '') + 
         "\n"
         f"Модули (плагины): {b(helplist.get_modules_count())}\n"
     )
@@ -83,9 +83,13 @@ async def _help(_, msg: M):
         commands_count += _commands_count
         features_count += _features_count
         help_text += (
-            f"    {code(module.name)} "
-            f"({b(_commands_count)} {plural(_commands_count, ('команда', 'команды', 'команд'))} и "
-            f"{ b(_features_count)} {plural(_features_count, ('возможность', 'возмоожности', 'возможностей'))})\n"
+            f"    {code(module.name)}   " + (
+                f"({b(_commands_count)} {plural(_commands_count, ('команда', 'команды', 'команд'))}"
+                if _commands_count > 0 else ''
+            ) + (' и ' if _commands_count > 0 and _features_count > 0 else '') + (
+                f"{ b(_features_count)} {plural(_features_count, ('возможность', 'возмоожности', 'возможностей'))})\n"
+                if _features_count > 0 else ')\n'
+            )
         )
 
 

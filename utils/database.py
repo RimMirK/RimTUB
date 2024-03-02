@@ -38,10 +38,38 @@ class Database:
             return default
         return json.loads(c[0][0])
 
+    async def getall(self, module, default=None):
+        c = await (await self.connect.execute(
+            f"SELECT `var` FROM `{self.id}` WHERE `mod` = :mod",
+            {'mod': module}
+        )).fetchall()
+
+        if c == []:
+            return default
+
+        vars = [item[0] for item in c]
+
+        d = {}
+        for var in vars:
+            d[var] = await self.get(module, var)
+            
+        return d
+
+    async def remove(self, module, variable):
+        await self.connect.execute(
+            f"DELETE FROM `{self.id}` WHERE `mod` = :mod AND `var` = :var",
+           {'mod': module, 'var': variable}
+        )
+        await self.connect.commit()
+
+    delete = remove
+
     async def exec(self, sql) -> list | None:
         result = await (await self.connect.execute(sql)).fetchall()
         await self.connect.commit()
         return result
+
+    sql = exec
 
 from typing import Any
 

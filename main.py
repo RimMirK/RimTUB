@@ -23,7 +23,7 @@ if play_sound:
     s = Sound('started.mp3')
 
  
-version = '1.2.0'
+version = '1.3.0'
 
 
 def start():

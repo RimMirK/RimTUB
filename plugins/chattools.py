@@ -42,7 +42,15 @@ async def _chat(_, msg):
 @cmd(['ping'])
 async def _ping(app, msg):
     ping = await check_ping(app)
-    await msg.edit(b(f"Pong!\n\nping: {ping:.1f}ms"))
+
+    if ping <= 100:
+        e = '<emoji id="5294160616729096737">🟢</emoji>'
+    elif ping <= 200:
+        e = '<emoji id="5294234838058938175">🟡</emoji>'
+    else:
+        e = '<emoji id="5291899179008798421">🔴</emoji>'
+        
+    await msg.edit(b(f"Pong!{e}\nPing: {ping:.1f}ms", False))
 
 
 messages: dict[int, dict[int, types.Message]] = {}

@@ -6,6 +6,7 @@ from utils import (
 )
 import asyncio
 from pyrogram import errors, types
+from pytimeparse.timeparse import timeparse
 
 cmd = Cmd(get_group())
 
@@ -13,11 +14,11 @@ helplist.add_module(
     Module(
         'RepeatTools',
         author='@RimMirK',
-        version='1.0.1',
+        version='1.0.2',
         description="Повторяет заданный текст определенное кол-во раз с определенной заддержкой."
     ).add_command(
         Command(['repeat', 'rep'],
-                [Arg('сколько раз'), Arg('с какой заддержкой (в секундах)'), Arg('текст сообщения')],
+                [Arg('сколько раз'), Arg('с какой заддержкой'), Arg('текст сообщения')],
                 'Начать повторять сообщение', 
     )).add_command(
         Command(
@@ -35,8 +36,9 @@ async def repeat(app, msg: types.Message):
         rep.append(n)
         app.st.set('rep', rep)
         
-        _, count, delay, *text = msg.command
+        _, count, delay, *text = msg.text.split()
         text = ' '.join(text)
+        delay = timeparse(delay)
         await msg.edit(
             f"Начинаю повторять сообщение {code(n)}"
             f"{pre(text)} {b(count)} раз с заддержкой в {b(sec_to_str(delay, False))}\n\n"

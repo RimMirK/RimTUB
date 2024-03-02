@@ -1,6 +1,9 @@
-from utils import Cmd, get_group, helplist, Module, Argument as Arg, Command
-from pyrogram.types import Message as M, ChatPrivileges as CP
-from pyrogram import Client as App
+from utils import Cmd, get_group, helplist, Module, Argument as Arg, Command, b, code, ModifyPyrogramClient as App
+from pyrogram.types import Message as M, ChatPrivileges as CP, ChatPermissions as CP
+from pyrogram.errors.exceptions.bad_request_400 import UsernameNotOccupied
+from pyrogram.utils import zero_datetime
+from datetime import datetime, timedelta
+from pytimeparse.timeparse import timeparse
 
 helplist.add_module(
     Module(
@@ -42,5 +45,55 @@ async def _title(app: App, msg: M):
         msg.text.split(maxsplit=1)[1]
     )
     return await msg.edit("Готово")
+    
+    
+
+
+@cmd(['mute', 'ro'])
+async def _mute(app: App, msg: M):
+    _, *args = msg.text.split()
+    r = msg.reply_to_message
+    if not r:
+        try:
+            u = await app.get_users(args[0])
+        except (UsernameNotOccupied, IndexError):
+            return await msg.edit(
+                b("Ответь на сообщение или укажи юзернейм пользователя через ")
+                + code('@') + b(' !')
+            )
+    else:
+        u = r.from_user or r.sender_chat
+
+    if u.id == app.me.id:
+        return await msg.edit(
+            b("Ты не можешь мутить самого себя!")
+        )
+
+    try: m = await app.get_chat_member(msg.chat.id, u.id)
+    except ValueError as e:
+        if str(e).startswith('The chat_id'):
+            return await msg.edit(
+                b("Это Личные Сообщения, тут нельзя никого замутить!")
+            )
+        else: raise e()
+    
+
+    t = None
+    for arg in args:
+        t = timeparse(arg)
+        if t: break
+
+
+    await app.restrict_chat_member(msg.chat.id, u.id,
+        CP(
+            can_send_messages=False,
+            can_send_media_messages=False,
+            can_send_polls=False,
+            can_send_other_messages=False
+        ),
+        datetime.now() + timedelta(seconds=t) if t else zero_datetime()
+    )
+
+
     
     
