@@ -1,6 +1,6 @@
 f"""\__| Основные настройки |__/"""
 
-PHONES = [""] # Номера телефонов в международном формате ["+380..", "+1234"]
+PHONES = [] # Номера телефонов в международном формате ["+380..", "+1234"]
 
 PREFIX = '.' # префикс перед командой.
 # если "." то команда выглядит как ".command"
@@ -36,3 +36,27 @@ DELETED_MESSAGES_FILTERS = filters.all
 f""" Funni plugin """
 
 TYPING_SYMBOL = "█" # символ, который эмитирует курсор при команде type
+
+
+
+f""" code_photo plugin """
+
+PHOTO_PARAMS = dict(
+    background_color = (255, 255, 255, 1),
+    drop_shadow = True,
+    shadow_blur_radius_px = 68,
+    shadow_offset_y_px = 20,
+    export_size = 2,
+    font_size_px = 14,
+    font_family = 'hack',
+    first_line_number = 1,
+    line_height_percent = 1.33,
+    show_line_numbers = True,
+    show_window_controls = True,
+    show_watermark = False,
+    horizontal_padding_px = 56,
+    vertical_padding_px = 56,
+    adjust_width = True,
+    theme = 'vscode',
+    window_theme = 'none'
+)
