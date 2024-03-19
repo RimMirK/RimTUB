@@ -40,8 +40,8 @@ helplist.add_module(
         'carbon',
         description="Работет на carbon.now.sh.\nМожно настроить в <code>config.user_config</code> -> <code>PHOTO_PARAMS</code>",
         author='@RimMirK',
-        version='1.0.1',
+        version='1.0.2',
     ).add_command(
-        Command(['cb', 'carbon'], [Arg("язык / auto"), Arg("код / ответ")], 'Красивое фото из кода')
+        Command(['cb', 'carbon'], [Arg("язык / auto"), Arg("код / ответ / цитата")], 'Красивое фото из кода')
     )
 )   
