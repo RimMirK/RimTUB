@@ -35,13 +35,13 @@ def sec_to_str(seconds: str, round: bool = True) -> str:
     if days:
         o = str(int(days)) + 'д.\xa0' + o
     if o == '':
-        o = '0'
+        o = '0c.'
 
     return o
 
 
 def plural(num, words: List['str']):
-    strnum = str(num)
+    strnum = str(int(num))
     last_2_nums = int(''.join(strnum[-2:-1])) if len(strnum) >= 2 else None
     last_num = int(strnum[-1])
 
@@ -57,16 +57,9 @@ def plural(num, words: List['str']):
         case _:
             return words[2]
 
-import os, sys, json, time
+import os, sys, time
 
 def restart(app_id, chat_id=None, msg_id=None):
-    # data = json.dumps(dict(
-    #     type = "restart",
-    #     time = time.perf_counter(),
-    #     chat_id = chat_id,
-    #     msg_id = msg_id,
-    # ))
-    # print(repr(data))
     os.execl(sys.executable, sys.executable, sys.argv[0],
         'restart', str(app_id),
         str(time.perf_counter()),

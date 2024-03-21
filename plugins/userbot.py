@@ -68,6 +68,8 @@ async def _help(_, msg: M):
             help_text += "    " + "\n    ".join(f.description.split('\n'))
             help_text += "\n\n"
 
+        help_text += f"\n{b('Легенда: ')}\n   {code('< >')} – обязательный аргумент\n   {code('[ ]')} – необязательный аргумент.\n   {code(' / ')} – или"
+
         return await msg.edit(help_text)
 
     help_text = (
@@ -112,7 +114,6 @@ async def _resatrt(app, msg):
 @Client.on_ready()
 async def _on_start(app):
     if len(sys.argv) >= 2:
-        print(sys.argv)
         _, type_, *values = sys.argv
         if type_ == 'restart':
             app_hash, time_, chat_id, msg_id = values
@@ -128,11 +129,11 @@ mod = Module(
     "Main",
     description="Главный модуль RimTUB. Помощь и управление тут",
     author="RimMirK",
-    version='1.1.0'
+    version='1.3.1'
 )
 
-mod.add_command(Command(['me', 'start', 'menu'], [Arg()], "Открыть стартовое меню"))
+mod.add_command(Command(['me', 'start', 'menu'], [], "Открыть стартовое меню"))
 mod.add_command(Command(['help', 'h'], [Arg('название модуля', False)], "Получить помощь"))
-mod.add_command(Command(['restart', 'reload'], [Arg()], "Перезапустить RimTUB"))
+mod.add_command(Command(['restart', 'reload'], [], "Перезапустить RimTUB"))
 
 helplist.add_module(mod)

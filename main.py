@@ -23,13 +23,14 @@ if play_sound:
     s = Sound('started.mp3')
 
  
-version = '1.3.0'
+version = '1.3.1'
 
 
 def start():
     for i, PHONE in enumerate(PHONES):
         cl = ModifyPyrogramClient(
             name="RimTUB" + (f'({i})' if i > 0 else ''),
+            # skip_updates=False,
             api_id=API_ID,
             api_hash=API_HASH,
             phone_number=PHONE,
@@ -40,7 +41,7 @@ def start():
             hide_password=True,
             parse_mode=ParseMode.HTML,
             sleep_threshold=30,
-            num=i
+            num=i,
         )
 
         cl.start()
