@@ -13,7 +13,7 @@ from utils import (
 from main import version
 from config import PREFIX, SHOW_HEADER_IN_HELP
 
-import os, sys, time, time, json
+import sys, time, time
 
 cmd = Cmd(get_group())
 
@@ -129,7 +129,7 @@ mod = Module(
     "Main",
     description="Главный модуль RimTUB. Помощь и управление тут",
     author="RimMirK",
-    version='1.3.1'
+    version='1.4'
 )
 
 mod.add_command(Command(['me', 'start', 'menu'], [], "Открыть стартовое меню"))

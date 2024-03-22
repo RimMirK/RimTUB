@@ -1,23 +1,32 @@
+import asyncio
 import aiosqlite, json
+
+class DatabaseBase:
+    def __init__(self, file: str) -> None:
+        self.file = file
+    
+    async def connect_db(self):
+        self.connection = await aiosqlite.connect(self.file)
+
+    def get_db(self, id):
+        ev = asyncio.get_event_loop()
+        ev.create_task(self.connection.execute(f"""
+            CREATE TABLE IF NOT EXISTS `{id}` (
+            `mod`  TEXT NOT NULL,
+            `var`  TEXT NOT NULL,
+            `val`       NOT NULL
+        )
+        """))
+        return Database(id, self.connection)
 
 class Database:
     connect: aiosqlite.Connection = None
     id: int
 
-    def __init__(self, id):
+    def __init__(self, id, connect):
         self.id = id
+        self.connect = connect
     
-    async def bootstrap(self, file: str):
-        if not self.connect:
-            self.connect = await aiosqlite.connect(file)
-
-        await self.connect.execute(f"""
-            CREATE TABLE IF NOT EXISTS `{self.id}` (
-            `mod`  TEXT        NOT NULL,
-            `var`  TEXT UNIQUE NOT NULL,
-            `val`              NOT NULL
-        )
-        """)
 
     async def set(self, module, variable, value):
         params = dict(mod=module, var=variable, val=json.dumps(value))

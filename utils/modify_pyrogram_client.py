@@ -1,17 +1,18 @@
 import asyncio
 from typing import Callable
 from pyrogram import Client
-import pyrogram
-from .database import Database, DictStorage
-from .scripts import get_script_directory
-from config.base_config import DATABASE_FILE
-from inspect import currentframe, getframeinfo
+from .database import Database, DictStorage, DatabaseBase
+from config.base_config import DATABASE_FILE, NAME
 from datetime import datetime
-from pathlib import Path
 from hashlib import sha256
 
 
 _on_ready_funcs: list = []
+
+database = DatabaseBase(DATABASE_FILE)
+
+ev = asyncio.get_event_loop()
+ev.run_until_complete(database.connect_db())
 
 class ModifyPyrogramClient(Client):
     cl: Client
@@ -26,13 +27,7 @@ class ModifyPyrogramClient(Client):
         self.num = num
         self.app_hash = sha256(bytes(str(self.phone_number).encode())).hexdigest()
 
-        database = Database(self.app_hash)
-
-        self.loop.run_until_complete(
-            database.bootstrap(DATABASE_FILE)
-        )
-    
-        self.db = database
+        self.db = database.get_db(self.app_hash)
     
 
     def start(self, *args, **kwargs):
@@ -50,24 +45,8 @@ class ModifyPyrogramClient(Client):
 
 
     def print(self=None, text='', *, end='\n'):
-        # frame = getframeinfo(currentframe().f_back)
-        # path = Path(frame.filename)
-        # rel = path.relative_to(
-        #     self.workdir if self else
-        #     Path(
-        #         '\\'.join(
-        #             Path(
-        #                 get_script_directory()
-        #             ).parents[-3:-1]
-        #         )
-        #     )
-        # )
-
-        to_print = ''
-        to_print += datetime.now().strftime('%d-%m-%Y %H:%M:%S') + ' '
-        to_print += '[RimTUB] '
+        to_print = f'{datetime.now().strftime("%d-%m-%Y %H:%M:%S")} '
+        to_print += f'[{NAME}] '
         to_print += f'[{self.num}] ' if self else ''
-        # to_print += ".".join([*rel.parts[:-1], rel.stem]) + "::"
-        # to_print += str(frame.lineno) + ' | '
-        to_print += text
+        to_print += str(text)
         print(to_print, end=end)
