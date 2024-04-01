@@ -27,10 +27,6 @@ LOADING = '<emoji id=5821116867309210830>⏳</emoji>'
 
 CHAT = 'air_alarm_ukraine_bot'
 
-@Cl.on_ready(get_group())
-async def _onready(app):
-    await app.send_message(CHAT, '/start')
-    # async for m in app.get_chat_history()
 
 
 @cmd(['almap'])

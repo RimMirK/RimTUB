@@ -1,7 +1,7 @@
 import asyncio
 import aiosqlite, json
 
-class DatabaseFactory:
+class DatabaseBase:
     def __init__(self, file: str) -> None:
         self.file = file
     

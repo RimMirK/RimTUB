@@ -1,8 +1,6 @@
 from typing import Any
-from .helplist import HelpList, singleton
-from .database import Database
+from .helplist import HelpList
 from .modify_pyrogram_client import ModifyPyrogramClient as Client
-from config import DATABASE_FILE
 from time import perf_counter
 
 helplist = HelpList()
@@ -20,7 +18,8 @@ class Cmd:
     
     def __call__(self, commands: list) -> Any:
         return Client.on_message(
-            filters.command(commands, PREFIX) & filters.me,
+            filters.command(commands, PREFIX) & filters.me
+            & ~filters.forwarded,
             group=self.group
         )
 
