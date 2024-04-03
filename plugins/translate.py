@@ -31,7 +31,7 @@ async def _tr(_, msg):
         await msg.edit(f"{bq(text)}\n{b(f'{e.__class__.__name__}')}: {bq(str(e))}")
         
 @cmd(['trf', 'translatefrom', 'trfrom'])
-async def _tr(_, msg):
+async def _trf(_, msg):
     _, src, ln, *text = (msg.text or msg.caption).split(maxsplit=3)
     if text == []:
         if msg.reply_to_message:
@@ -59,7 +59,7 @@ helplist.add_module(
         "translate",
         description="Google переводчик",
         author="@RimMirK",
-        version="1.1.1",
+        version="1.1.2",
     ).add_command(
         Command(['tr', 'translate'], [Arg("целевой язык"), Arg("текст/ответ")], "Перевести текст")
     ).add_command(
