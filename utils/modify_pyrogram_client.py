@@ -1,7 +1,7 @@
 import asyncio
 from typing import Callable
 from pyrogram import Client
-from .database import Database, DictStorage, DatabaseBase
+from .database import Database, DictStorage, DatabaseFactory
 from config.base_config import DATABASE_FILE, NAME
 from datetime import datetime
 from hashlib import sha256
@@ -9,7 +9,7 @@ from hashlib import sha256
 
 _on_ready_funcs: list = []
 
-database = DatabaseBase(DATABASE_FILE)
+database = DatabaseFactory(DATABASE_FILE)
 
 ev = asyncio.get_event_loop()
 ev.run_until_complete(database.connect_db())
