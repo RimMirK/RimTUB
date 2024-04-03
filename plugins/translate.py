@@ -32,7 +32,7 @@ async def _tr(_, msg):
         
 @cmd(['trf', 'translatefrom', 'trfrom'])
 async def _tr(_, msg):
-    _, src, ln, *text = (msg.text or msg.caption).split(maxsplit=2)
+    _, src, ln, *text = (msg.text or msg.caption).split(maxsplit=3)
     if text == []:
         if msg.reply_to_message:
             text = msg.quote_text or msg.reply_to_message.text
@@ -59,7 +59,7 @@ helplist.add_module(
         "translate",
         description="Google переводчик",
         author="@RimMirK",
-        version="1.1.0",
+        version="1.1.1",
     ).add_command(
         Command(['tr', 'translate'], [Arg("целевой язык"), Arg("текст/ответ")], "Перевести текст")
     ).add_command(
