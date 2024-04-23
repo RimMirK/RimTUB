@@ -67,12 +67,7 @@
 
 
 ### Android
-1. Скачайте и установите [Tremux](https://f-droid.org/repo/com.termux_118.apk)
-2. Введите команду `cd ~ && apt update && apt upgrade && apt-get update && apt-get upgrade && pkg install python && pkg install python3 && termux-setup-storage`
-3. Скачайте и распакуйте ZIP арихв в корневую дерикторию телефона (там где папки Android и Downloads)
-4. Найдите эту папку в проводнике. Там откройте на редактирование файл `config/user_config.py` и замените номер телефона на свой следуя инструкциям в файле.
-5. Введите комманду `python3 -m pip install -r requirements.txt`
-6. в Tremux пропишите команду `cd storage/shared/RimTUB-main/RimTUB-main && python3 main.py`
+> к сожелению, на телефоне пока нельзя запустить
 
 
 ## Контакт
