@@ -58,7 +58,7 @@
 6. Откройте консоль. Для этого
     - Нажмите сочетание клавиш `Win` + `R`
     - В открывшимся окне введите `cmd`
-7.  Перейдите в директорию RimTUB (там где файл main.py): `cd С:\Downloads\RimTUB\`
+7.  Перейдите в директорию RimTUB (там где файл main.py): `cd С:\Downloads\RimTUB\RimTUB-main`
 8. Создайте витруальное окружение: `python -m venv .venv`
 9. Активируйте его: `.venv\Scripts\activate.bat`
 10. Введите комманду `python -m pip install -r requirements.txt`
