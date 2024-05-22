@@ -1,7 +1,10 @@
-from pyrogram import Client, types, enums
+from pyrogram import types, enums
 from config import DELETED_MESSAGES_CHAT_ID, DELETED_MESSAGES_FILTERS
-from utils import code, a, b, Cmd, get_group, helplist, Module, Command, Feature, PREFIX, check_ping
+from utils import code, a, b, Cmd, get_group, helplist, Module, Command, Feature, Argument as Arg, PREFIX, check_ping, ModifyPyrogramClient as Client
 import asyncio
+
+import logging
+logger = logging.getLogger("RimTUB")
 
 helplist.add_module(
     Module(
@@ -10,9 +13,11 @@ helplist.add_module(
         version="1.2.0",
         author="@RimMirK"
     ).add_command(
-        Command(['id', 'chatid', 'cid'], [], "Показать ID чата")
+        Command(['chatid', 'cid'], [], "Показать ID чата")
     ).add_command(
         Command(['chat', 'c'], [], "Получить всю информацию о чате")
+    ).add_command(
+        Command(['uid', 'userid'], [Arg("ответ")], "Показать ID пользователя")
     ).add_feature(
         Feature(
             "Нет удаленным сообщений", 
@@ -31,9 +36,16 @@ helplist.add_module(
 G = get_group()
 cmd = Cmd(G)
 
-@cmd(['id', 'chatid', 'cid'])
-async def _id(_, msg):
+@cmd(['chatid', 'cid'])
+async def _cid(_, msg):
     await msg.edit("ID Чата: " + code(msg.chat.id))
+
+@cmd(['uid', 'userid'])
+async def _uid(_, msg):
+    if r := msg.reply_to_message:
+        await msg.edit("ID пользователя: " + code(r.from_user.id))
+    else:
+        await msg.edit("Ответь на сообщение!")
 
 @cmd(['chat', 'c'])
 async def _chat(_, msg):
@@ -188,17 +200,11 @@ if DELETED_MESSAGES_CHAT_ID:
                             reply_to_message_id=sm.id
                         )
                     elif md == MT.WEB_PAGE:
-                        # ватафак че это такое и как эту дрянь отправить
-                        # TODO: Отловить эту хрень и посмотреть что это
-
-                        # UPD: Это обычное сообщение с предпросмотром ссылки
                         await app.send_message(
                             DELETED_MESSAGES_CHAT_ID,
                             m.text.html,
                             reply_to_message_id=sm.id
                         )
-                    else: print(md)
-
                 else:
                     await app.send_message(
                         DELETED_MESSAGES_CHAT_ID,
@@ -208,13 +214,9 @@ if DELETED_MESSAGES_CHAT_ID:
             except KeyError:
                 pass
             except Exception as ex:
-                print(__name__, ex)
-                from traceback import print_exc
-                print_exc()
-                if str(ex) == "'NoneType' object has no attribute 'html'":
-                    print(m)
+                app.logger.debug(exc_info=ex)
 else:
-    print("config.DELETED_MESSAGES_CHAT_ID не задано. Удаленные сообщения регестрироваться не будут!")
+    logger.warning("config.DELETED_MESSAGES_CHAT_ID не задано. Удаленные сообщения регестрироваться не будут!")
 
 
         

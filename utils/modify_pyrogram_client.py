@@ -5,6 +5,7 @@ from .database import Database, DictStorage, DatabaseFactory
 from config.base_config import DATABASE_FILE, NAME
 from datetime import datetime
 from hashlib import sha256
+from logging import Logger
 
 
 _on_ready_funcs: list = []
@@ -19,8 +20,16 @@ class ModifyPyrogramClient(Client):
     db: Database
     st: DictStorage
     num: int
+    logger: Logger
+    info: Logger.info
+    warning: Logger.warning
+    error: Logger.error
+    debug: Logger.debug
+    critical: Logger.critical
+    fatal: Logger.fatal
+    log: Logger.log
 
-    def __init__(self, *args, num: int, **kwargs):
+    def __init__(self, *args, num: int, logger: Logger, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.st = DictStorage()
@@ -28,6 +37,15 @@ class ModifyPyrogramClient(Client):
         self.app_hash = sha256(bytes(str(self.phone_number).encode())).hexdigest()
 
         self.db = database.get_db(self.app_hash)
+        
+        self.logger   = logger
+        self.info     = logger.info
+        self.warning  = logger.warning
+        self.error    = logger.error
+        self.debug    = logger.debug
+        self.critical = logger.critical
+        self.fatal    = logger.fatal
+        self.log      = logger.log
     
 
     def start(self, *args, **kwargs):
@@ -42,11 +60,3 @@ class ModifyPyrogramClient(Client):
         def decorator(func: Callable):
             _on_ready_funcs.append(func)
         return decorator
-
-
-    def print(self=None, text='', *, end='\n'):
-        to_print = f'{datetime.now().strftime("%d-%m-%Y %H:%M:%S")} '
-        to_print += f'[{NAME}] '
-        to_print += f'[{self.num}] ' if self else ''
-        to_print += str(text)
-        print(to_print, end=end)
