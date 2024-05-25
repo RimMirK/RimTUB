@@ -6,4 +6,4 @@ DATABASE_FILE = 'database.db'
 NAME = "RimTUB"
 
 import logging
-LOGGING_LEVEL = logging.debug
+LOGGING_LEVEL = logging.DEBUG
