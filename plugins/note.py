@@ -1,16 +1,15 @@
-from utils import Cmd, get_group, helplist, Argument as Arg, Command, Module, b, code
-
-
+from utils import Cmd, get_group, helplist, Argument as Arg, Command, Module, b, i, code, ModifyPyrogramClient as Client
+from pyrogram.types import Message
 
 helplist.add_module(
     Module(
-        "notes",
-        description="заметки",
+        "notes 2.0",
+        description="заметки 2.0",
         author="@RimMirK",
-        version='1.0.0'
+        version='2.0'
     ).add_command(
         Command(
-            ['addnote', 'setnote'], [Arg("название"), Arg("текст / ответ")], 'создать заметку'
+            ['addnote', 'setnote'], [Arg("название"), Arg("ответ")], 'создать заметку'
         )
     ).add_command(
         Command(
@@ -18,80 +17,107 @@ helplist.add_module(
         )
     ).add_command(
         Command(
-            ['cnote', 'clearnote'], [Arg("название")], 'вывести только текст заметки'
-        )
-    ).add_command(
-        Command(
             ['notes', 'mynotes'], [], 'список заметок'
         )
     ).add_command(
         Command(
-            ['delnote', 'delnotes'], [Arg("название(-я)")], 'удалить заметку'
+            ['delnote'], [Arg("название")], 'удалить заметку'
         )
     )
 )
 
 cmd = Cmd(get_group())
 
+@cmd(["addnote", 'setnote'])
+async def _naddnote(app: Client, msg: Message):
+    r = msg.reply_to_message
+    if not r:
+        return await msg.edit(b("Ответь на сообщение!"))
+    try:
+        name = msg.text.split(maxsplit=1)[1]
+    except:
+        return await msg.edit(b("Напиши название заметки!"))
+    saved_msg = await r.copy('me')
+    warning_msg = await saved_msg.reply(b("Не удаляй это сообщение! Оно нужно для работы заметок!"), quote=True)
+    await app.db.set('nnotes', name, saved_msg.id)
+    await app.db.set('nnotes_meta', name, warning_msg.id)
+    await msg.edit(b("Заметка ") + code(name) + b(" сохранена!"))
 
-@cmd(['addnote', "setnote"])
-async def _setnote(app, msg):
-    _, *args = msg.text.split(maxsplit=2)
-
-    if not args:
-        return await msg.edit(b('неверный ввод данных!'))
-
-    name = args[0]
-
-    if len(args) > 1:
-        text = args[1]
-        text_html = msg.text.html.split(maxsplit=2)[-1]
-    else:
-        if r := msg.reply_to_message:
-            text = msg.quote_text or r.text or r.caption
-            text_html = text.html
-        else:
-            return await msg.edit(b('неверный ввод данных!'))
+@cmd('note')
+async def _nnote(app: Client, msg: Message):
+    try:
+        name = msg.text.split(maxsplit=1)[1]
+    except:
+        return await msg.edit(b("Напиши название заметки!"))
     
-    await app.db.set("notes", name.lower(), {'html': text_html, 'text': text})
-    
-    await msg.edit(b(f"Заметка {code(name)} добавлена!", False))
-
-@cmd(["note", "cnote", "clearnote"])
-async def _note(app, msg):
-    cmd, name = msg.text.split(maxsplit=1)
-    
-    note = await app.db.get('notes', name.lower())
-    
-    if note:
-        if cmd[1] == 'c':
-            return await msg.edit(note['html'])
-        return await msg.edit(f"Заметка {b(name)}:\n\n{note['html']}")
-    
-    return await msg.edit(b(f"Заметка {code(name)} не найдена!", False))
+    note_msg_id = await app.db.get('nnotes', name)
+    if note_msg_id is None:
+        return await msg.edit(b("Заметка ") + code(name) + b(" не найдена!"))
+    await app.copy_message(
+        msg.chat.id, 'me', note_msg_id,
+        reply_to_message_id=msg.reply_to_message_id,
+        message_thread_id=msg.message_thread_id
+    )
+    await msg.delete()
 
 @cmd(["notes", "mynotes"])
-async def _mynotes(app, msg):
-    d = await app.db.getall('notes')
-
-    bn = '\n'
+async def _mynotes(app: Client, msg):
+    d = await app.db.getall('nnotes')
 
     if d:
         m = b('Твои заметки:\n')
-        for key, note in d.items():
-            m += f' - {code(key)} : {note["text"][:20].replace(bn, " ")}...\n'
+        for name, note_msg_id in d.items():
+            note_msg = await app.get_messages('me', note_msg_id)
+            m += " - " + code(name) + " : "
+            if note_msg.text:
+                m += (
+                    (note_msg.text[:15].replace("\n", ' ') + '...')
+                    if len(note_msg.text) > 15
+                    else note_msg.text.replace("\n", ' ')
+                )
+            elif note_msg.video:
+                m += i('Видео')
+            elif note_msg.photo:
+                m += i("Фото")
+            elif note_msg.sticker:
+                m += i("Стикер")
+            elif note_msg.animation:
+                m += i("ГИФ")
+            elif note_msg.document:
+                m += i("Файл")
+            elif note_msg.voice:
+                m += i("ГС")
+            elif note_msg.video_note:
+                m += i("Кружочек")
+            if note_msg.caption:
+                m += " " + (
+                    (note_msg.caption[:15].replace("\n", ' ') + '...')
+                    if len(note_msg.caption) > 15
+                    else note_msg.caption.replace("\n", ' ')
+                )
+            m += '\n'
+            
+            
+        
     else:
         m = b('пусто!')
     await msg.edit(m)
 
-@cmd(["delnote", "delnotes"])
-async def _delnote(app, msg):
-    _, *names = msg.text.split()
+@cmd("delnote")
+async def _delnote(app: Client, msg):
+    try:
+        name = msg.text.split(maxsplit=1)[1]
+    except:
+        return await msg.edit(b("Напиши название заметки!"))
 
-    if not names:
-        return await msg.edit(b("Неверны ввод!"))
+    note_msg_id = await app.db.get('nnotes', name)
+    if note_msg_id is None:
+        return await msg.edit(b("Заметка не найдена!"))
+    
+    await app.delete_messages('me', note_msg_id)
+    await app.delete_messages('me', await app.db.get("nnotes_meta", name))
+    
+    await app.db.remove('nnotes', name)
+    await app.db.remove('nnotes_meta', name)
 
-    for name in names:
-        await app.db.remove('notes', name)
-
-    await msg.edit(b("Готово!"))
+    await msg.edit(b("Заметка ") + code(name) + b(" удалена!"))
