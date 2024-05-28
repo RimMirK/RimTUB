@@ -6,7 +6,7 @@ helplist.add_module(
         "notes",
         description="заметки 2.0",
         author="@RimMirK",
-        version='2.0'
+        version='2.0.1'
     ).add_command(
         Command(
             ['addnote', 'setnote'], [Arg("название"), Arg("ответ")], 'создать заметку'
