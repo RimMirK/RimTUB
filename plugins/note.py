@@ -3,7 +3,7 @@ from pyrogram.types import Message
 
 helplist.add_module(
     Module(
-        "notes 2.0",
+        "notes",
         description="заметки 2.0",
         author="@RimMirK",
         version='2.0'
