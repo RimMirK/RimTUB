@@ -35,14 +35,14 @@ async def get_answer(
 async def make_request(app,
     request: str, chat: Union[int, str], startswith: str = '',
     timeout: int = 60, default: any = None, typing: bool = True,
-    additional_filter: Filter = None,
+    additional_filter: Filter = None, **msg_kwargs
 ) -> types.Message:
     if typing:
         await app.send_chat_action(chat, enums.chat_action.ChatAction.TYPING)
         await asyncio.sleep(1)
     return await get_answer(
         app, 
-        (await app.send_message(chat, request)).chat.id,
+        (await app.send_message(chat, request, **msg_kwargs)).chat.id,
         startswith=startswith,
         timeout=timeout,
         default=default,
