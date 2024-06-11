@@ -11,6 +11,7 @@ certifi==2023.11.17
 chardet==3.0.4
 charset-normalizer==3.3.2
 click==8.1.7
+coloredlogs==15.0.1
 colorama==0.4.6
 convopyro==0.5
 distro==1.9.0
