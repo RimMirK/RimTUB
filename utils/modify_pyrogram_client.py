@@ -8,8 +8,6 @@ from hashlib import sha256
 from logging import Logger
 from telebot.async_telebot import AsyncTeleBot
 
-# почему у тебч ошиьбки 👍
-# где?
 _on_ready_funcs: list = []
 
 database = DatabaseFactory(DATABASE_FILE)
