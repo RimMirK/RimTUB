@@ -49,20 +49,29 @@
 
 ## Установка и Первая настройка
 
+### Перед тем как начать
+1.  Создай бота в [@BotFather](https://t.me/BotFather), следуя инструкциям. Скопируй и сохрани `HTTP TOKEN` (он выглядит так: `12345678:qwertyuiopasdfghjklzxcvbnm`)
+2.  `/mybots`
+3.  выбирай только-что созданного бота
+4.  Bot settings
+5.  Inline mode
+6.  Turn on
+
 ### Windows 
 1. Скачайте весь код себе на компьютер ZIP \
    ![1. </> Code 2. Download ZIP](https://github.com/RimMirK/RimTUB/assets/115800822/07275682-7c4d-47ea-9058-3f2161bb41e3)
 3. Распакуйте архив в удобное для вас место
 4. Откройте на редактирование файл `config/user_config.py` и в нем замените номер телефона на свой. Следуйте указанием в файле.
-5. Установите Python версии **3.11**.x с [официального сайта Python](https://www.python.org/downloads/)
-6. Откройте консоль. Для этого
+5. В этом же файле в поле `BOT_TOKEN` вставь токен бота
+6. Установите Python версии **3.11**.x с [официального сайта Python](https://www.python.org/downloads/)
+7. Откройте консоль. Для этого
     - Нажмите сочетание клавиш `Win` + `R`
     - В открывшимся окне введите `cmd`
-7.  Перейдите в директорию RimTUB (там где файл main.py): `cd С:\Downloads\RimTUB\RimTUB-main`
-8. Создайте витруальное окружение: `python -m venv .venv`
-9. Активируйте его: `.venv\Scripts\activate.bat`
-10. Введите комманду `python -m pip install -r requirements.txt`
-11. Наконец запускайте `python main.py`
+8.  Перейдите в директорию RimTUB (там где файл main.py): `cd С:\Downloads\RimTUB\RimTUB-main`
+9. Создайте витруальное окружение: `python -m venv .venv`
+10. Активируйте его: `.venv\Scripts\activate.bat`
+11. Введите комманду `python -m pip install -r requirements.txt`
+12. Наконец запускайте `python main.py`
 
 
 
