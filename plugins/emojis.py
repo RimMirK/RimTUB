@@ -19,9 +19,12 @@ async def _emj(_, msg):
     for emj in emjs:
         emojis[str(emj)] = (emj.attrs['id'])
     
+    q1 = '"'
+    q2 = "'"
+    
     t = b('Custom Emojis:\n')
     for html, id_ in emojis.items():
-        t += f"{html} : {code(id_)}\n{code(html)}\n\n"
+        t += f"{html} : {code(id_)}\n{code(html)}\n{code(html.replace(q1, q2))}\n\n"
         
     await msg.edit(t)
     

@@ -14,11 +14,11 @@ helplist.add_module(
     Module(
         'RepeatTools',
         author='@RimMirK',
-        version='1.0.2',
+        version='1.0.3',
         description="Повторяет заданный текст определенное кол-во раз с определенной заддержкой."
     ).add_command(
         Command(['repeat', 'rep'],
-                [Arg('сколько раз'), Arg('с какой заддержкой'), Arg('текст сообщения')],
+                [Arg('сколько раз'), Arg('заддержка'), Arg('текст сообщения')],
                 'Начать повторять сообщение', 
     )).add_command(
         Command(
@@ -47,17 +47,13 @@ async def repeat(app, msg: types.Message):
             if n not in app.st.get('rep', []): 
                 await app.send_message(msg.chat.id, f"⛔ Перестал повторять сообщение {b(n)}")
                 break
-            try: await app.send_message(msg.chat.id, text)
-            except errors.flood_420.FloodWait as s:
-                try: await asyncio.sleep(s)
-                except: await asyncio.sleep(1)
-                await app.send_message(msg.chat.id, text)
-            await asyncio.sleep(float(delay))
+            await app.send_message(msg.chat.id, text, message_thread_id=msg.message_thread_id)
+            
     except ValueError:
         from config import PREFIX
         await msg.edit(
             f"<emoji id=5300877490313509761>📛</emoji> Ошибка ввода данных!\n"
-            f"Используй {code(PREFIX + msg.command[0])} {b('[сколько повторений] [с какой заддержкай (в секундах)] [текст]')} (без скобок)"
+            f"Используй {code(PREFIX + msg.command[0])} {b('[сколько повторений] [с какой заддержкай] [текст]')} (без скобок)"
         )
 
 @cmd(["norepeat", 'stoprepeat', 'norep', 'stoprep'])

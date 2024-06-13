@@ -47,7 +47,7 @@ class Database:
             return default
         return json.loads(c[0][0])
 
-    async def getall(self, module, default=None):
+    async def getall(self, module, default=None) -> dict[str, any] | None:
         c = await (await self.connect.execute(
             f"SELECT `var` FROM `{self.id}` WHERE `mod` = :mod",
             {'mod': module}

@@ -129,7 +129,7 @@ mod = Module(
     "Main",
     description="Главный модуль RimTUB. Помощь и управление тут",
     author="RimMirK",
-    version='1.6'
+    version='1.7'
 )
 
 mod.add_command(Command(['me', 'start', 'menu'], [], "Открыть стартовое меню"))

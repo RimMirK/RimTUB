@@ -6,8 +6,10 @@ from config.base_config import DATABASE_FILE, NAME
 from datetime import datetime
 from hashlib import sha256
 from logging import Logger
+from telebot.async_telebot import AsyncTeleBot
 
-
+# почему у тебч ошиьбки 👍
+# где?
 _on_ready_funcs: list = []
 
 database = DatabaseFactory(DATABASE_FILE)
@@ -28,8 +30,10 @@ class ModifyPyrogramClient(Client):
     critical: Logger.critical
     fatal: Logger.fatal
     log: Logger.log
+    bot: AsyncTeleBot
+    bot_username: str
 
-    def __init__(self, *args, num: int, logger: Logger, **kwargs):
+    def __init__(self, *args, num: int, logger: Logger, bot: AsyncTeleBot, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.st = DictStorage()
@@ -46,10 +50,14 @@ class ModifyPyrogramClient(Client):
         self.critical = logger.critical
         self.fatal    = logger.fatal
         self.log      = logger.log
+        
+        self.bot = bot
     
 
     def start(self, *args, **kwargs):
         r = super().start(*args, **kwargs)
+        
+        self.bot_username = self.loop.run_until_complete(self.bot.get_me()).username
         
         for func in _on_ready_funcs:
             self.loop.create_task(func(self))

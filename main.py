@@ -16,17 +16,21 @@ if __name__ == '__main__':
 from pyrogram import idle
 from pyrogram.enums.parse_mode import ParseMode
 
-from config import API_ID, API_HASH, PHONES, PLAY_SOUND
+from config import API_ID, API_HASH, PHONES, PLAY_SOUND, BOT_TOKEN
 from utils import get_script_directory, ModifyPyrogramClient
 
 from sys import argv
 
  
-version = '1.6'
+from telebot.async_telebot import AsyncTeleBot 
+ 
+version = '1.7'
 
 clients = []
 
 def start():
+    bot = AsyncTeleBot(BOT_TOKEN, 'html', colorful_logs=True)
+    asyncio.get_event_loop().create_task(bot.polling(none_stop=True))
     for i, PHONE in enumerate(PHONES):
         account_logger = logging.getLogger(f'RimTUB [{i}]')
         account_logger.setLevel(LOGGING_LEVEL)
@@ -42,12 +46,13 @@ def start():
                 accid=dict(color='cyan')
             )
         )
+        
         cl = ModifyPyrogramClient(
             name="RimTUB" + (f'({i})' if i > 0 else ''),
             api_id=API_ID,
             api_hash=API_HASH,
             phone_number=PHONE,
-            app_version="1.0.0",
+            app_version="1.7",
             lang_code="ru",
             plugins=dict(root='plugins'),
             workdir=get_script_directory(),
@@ -55,7 +60,8 @@ def start():
             parse_mode=ParseMode.HTML,
             sleep_threshold=30,
             num=i,
-            logger=account_logger
+            logger=account_logger,
+            bot=bot
         )
 
         cl.start()

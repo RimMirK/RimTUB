@@ -43,7 +43,7 @@ async def _naddnote(app: Client, msg: Message):
     await app.db.set('nnotes_meta', name, warning_msg.id)
     await msg.edit(b("Заметка ") + code(name) + b(" сохранена!"))
 
-@cmd('note')
+@cmd(['note', 'cnote'])
 async def _nnote(app: Client, msg: Message):
     try:
         name = msg.text.split(maxsplit=1)[1]
