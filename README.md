@@ -1,5 +1,7 @@
 # RimMirK Telegram User Bot [RimTUB]
 
+# ВНИМАНИЕ! ЭТО СТАРЫЙ РЕПОЗИТОРИЙ. НОВЫЕ ВЕРСИИ RimTUB НАХОДЯТСЯ ТУТ -> [RimTUB/RimTUB](https://github.com/RimTUB/RimTUB)
+
 ## содержание
  + [UserBot](#UserBot)
  + [Q & A](#q--a)
